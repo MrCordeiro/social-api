@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "social-api"
+version = "0.1.0"
+description = "FastAPI course: from https://www.youtube.com/watch?v=0sOvCWFmrtA"
+authors = ["Sanjeev Thiyagarajan"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["all"], version = "^0.70.0"}
+
+[tool.poetry.dev-dependencies]
+black = "^21.10b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
