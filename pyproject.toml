@@ -7,9 +7,13 @@ authors = ["Sanjeev Thiyagarajan"]
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.70.0"}
+psycopg2 = "^2.9.2"
+SQLAlchemy = "^1.4.27"
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"
+bandit = "^1.7.1"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
