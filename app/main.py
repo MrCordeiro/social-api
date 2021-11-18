@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, Response, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
-from . import models, schemas
+from . import models, schemas, utils
 from .database import get_db, engine
 
 
@@ -100,3 +100,14 @@ def update_post(
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
     return post_query.first()
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    user.password = utils.hash(user.password)
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
