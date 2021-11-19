@@ -2,7 +2,26 @@
 Defines the formats data must follow both in the request as well as in the response.
 """
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, EmailStr
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class PostBase(BaseModel):
@@ -20,6 +39,8 @@ class Post(PostBase):
 
     id: int
     created_at: datetime
+    owner_id: int
+    owner: UserOut
 
     class Config:
         # This tells pydantic it will receive a SQLAlchemy instance, and that it
@@ -27,14 +48,10 @@ class Post(PostBase):
         orm_mode = True
 
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-
-    class Config:
-        orm_mode = True
+class TokenData(BaseModel):
+    id: Optional[str] = None

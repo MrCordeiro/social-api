@@ -46,4 +46,3 @@ def get_db():
 #         print("Connecting to database failed")
 #         print(f"Error: {e}")
 #         time.sleep(5)
-
