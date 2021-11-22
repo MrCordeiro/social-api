@@ -10,7 +10,8 @@ fastapi = {extras = ["all"], version = "^0.70.0"}
 psycopg2 = "^2.9.2"
 SQLAlchemy = "^1.4.27"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-python-jose = "^3.3.0"
+python-jose = "^3.3.0"  # jose is a library for creating JWS, JWE, JWT
+alembic = "^1.7.5"  # alembic is used to manage migrations
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"

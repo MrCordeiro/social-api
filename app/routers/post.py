@@ -1,14 +1,15 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Response, status
 from fastapi.exceptions import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from .. import models, oauth2, schemas
-from ..database import get_db, engine
+from ..database import get_db
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=list[schemas.Post])
+@router.get("/", response_model=list[schemas.PostOut])
 def get_posts(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
@@ -16,13 +17,14 @@ def get_posts(
     skip: int = 0,
     search: Optional[str] = None,
 ):
-    posts = (
-        db.query(models.Post)
-        .filter(models.Post.title.contains(search))
-        .limit(limit)
-        .offset(skip)
-        .all()
+    post_query = (
+        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+        .group_by(models.Post.id)
     )
+    if search:
+        post_query = post_query.filter(models.Post.title.contains(search))
+    posts = post_query.limit(limit).offset(skip).all()
 
     # With raw SQL (using psycopg2)
     # cursor.execute("""SELECT * FROM public.posts""")
