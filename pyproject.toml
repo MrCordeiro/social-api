@@ -17,6 +17,7 @@ alembic = "^1.7.5"  # alembic is used to manage migrations
 black = "^21.10b0"
 bandit = "^1.7.1"
 mypy = "^0.910"
+pytest = "^6.2.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -54,13 +54,19 @@ def create_posts(
     return new_post
 
 
-@router.get("/{post_id}", response_model=schemas.Post)
+@router.get("/{post_id}", response_model=schemas.PostOut)
 def get_post(
     post_id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
-    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    post = (
+        db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+        .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+        .group_by(models.Post.id)
+        .filter(models.Post.id == post_id)
+        .first()
+    )
 
     # With raw SQL (using psycopg2)
     # cursor.execute("""SELECT * FROM public.posts WHERE id = %s""", (str(id),))
@@ -79,14 +85,14 @@ def delete_post(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
+    post_query = db.query(models.Post).filter(models.Post.id == post_id)
     post = post_query.first()
 
     # With raw SQL (using psycopg2)
     # cursor.execute("""DELETE FROM public.posts WHERE id = %s RETURNING *""", (str(id),))
     # deleted_post = cursor.fetchone()
     # conn.commit()
-    if not post.first():
+    if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {post_id} does not exist",
